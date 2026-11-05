@@ -56,7 +56,23 @@ Bir klasör açın ve ilk mesajınızı göndererek sohbet oluşturun. Komut pal
 **Status** her reponun durumunu, **Clear selection** mevcut sohbetin seçimini yönetir.
 Dosya seçimi yalnız yerel Desktop sunucusundaki mevcut sohbetlerde desteklenir.
 
-## Manifest
+## Kod yazmadan yeni workspace
+
+Bir yerel sohbet açtıktan sonra yan panelin **+** menüsünde **Yeni Workspace** seçin.
+Aynı akış komut paletinde **Multi-Root Workspace: Yeni Workspace** olarak da bulunur.
+
+1. Workspace adını yazın.
+2. Klasör seçicisinden frontend/backend Git repolarınızı seçin. Farklı konumlar için **Başka klasör ekle** kullanın.
+3. **Devam et** ile yalnız okuma, dosya düzenleme veya dosya düzenleme + Git erişimini seçin.
+4. Workspace dosyasını kaydedeceğiniz klasörü seçin ve **Oluştur ve aç** düğmesine basın.
+
+`.workspace` dosyası otomatik oluşturulur ve mevcut sohbette açılır; JSON düzenlemeniz gerekmez.
+Repo adları klasör adlarından otomatik üretilir. Mevcut workspace dosyasının üzerine yazılmaz;
+aynı konumda aynı ad varsa farklı bir workspace adı veya kayıt klasörü seçin.
+Seçilen klasörler önceden var olan Git repo/worktree kökleri olmalıdır. Bu işlem yeni Git reposu oluşturmaz.
+Yerleşik başlangıç proje seçicisi aynı kalır; **Yeni Workspace**, eklentinin yan panel menüsündedir.
+
+## Manifest (elle düzenlemek isteyenler için)
 
 `personel-portal.workspace` ile iki repo aynı üst klasörde bulunabilir:
 

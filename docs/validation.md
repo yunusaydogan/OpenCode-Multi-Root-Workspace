@@ -43,7 +43,7 @@ replace the tested API. Re-run `npm audit` before a release; the registry can ch
 7. In a disposable repo with a local bare remote, review staged diff; approve stage/commit/push
    separately. Verify the other repo and unrelated upstream branches stay unchanged.
 
-Final automated result: **17/17 tests passed**, TypeScript check passed, GUI build passed,
+Final automated result: **19/19 tests passed**, TypeScript check passed, GUI build passed,
 source and packed-artifact live-server smoke tests passed. Reproduce the live check with:
 
 ```sh
@@ -67,3 +67,11 @@ installed and do not install system dependencies or alter the real user's OpenCo
 The installed Linux copy was also loaded by a real isolated OpenCode 2.2.5 server through
 automatic global plugin discovery, without adding a `plugins` configuration entry. Manifest
 selection, status, GUI bundle delivery and clearing selection passed.
+
+## Workspace creation wizard
+
+Added the side-panel + menu entry and palette command for native, code-free workspace creation.
+Tests cover name/folder/capability/destination submission, cancellation, validation before writing,
+and refusal to overwrite an existing manifest. The real server smoke now also calls create RPC,
+then verifies the newly created workspace is active. Native Desktop dialog clicks remain a manual
+acceptance check; the wizard adapter is exercised through the host harness.

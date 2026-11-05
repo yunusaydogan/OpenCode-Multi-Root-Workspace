@@ -104,13 +104,33 @@ try {
   );
   const gui = await client.plugin.gui({ id: "multi-root-workspace", location });
   assert.ok(JSON.stringify(gui).length > 1000, "GUI bundle missing");
+  const created = await client
+    .rpc(WorkspaceRpc)
+    .create(
+      {
+        sessionID: session.id,
+        name: "Created smoke",
+        directory: base,
+        folders: [repo],
+        allowFileWrites: false,
+        allowGitWrites: false,
+      },
+      { location },
+    );
+  assert.match(created, /Created smoke/);
+  assert.match(
+    await client
+      .rpc(WorkspaceRpc)
+      .status({ sessionID: session.id }, { location }),
+    /Created smoke/,
+  );
   await client.rpc(WorkspaceRpc).clear({ sessionID: session.id }, { location });
   await assert.rejects(
     client.rpc(WorkspaceRpc).status({ sessionID: session.id }, { location }),
   );
   await client.session.remove({ sessionID: session.id });
   console.log(
-    "PASS: real OpenCode server loaded plugin, persisted per-session manifest, ran status, served GUI bundle and cleared selection.",
+    "PASS: real OpenCode server loaded plugin, persisted per-session manifest, ran status, served GUI bundle, created a workspace and cleared selection.",
   );
 } finally {
   child.kill("SIGTERM");

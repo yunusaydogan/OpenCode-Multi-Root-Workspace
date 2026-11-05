@@ -86,7 +86,19 @@ A GitHub checkout requires `npm ci && npm run build`; `dist/` is generated, not 
 To distribute a prebuilt archive run `npm pack`: the tarball includes the GUI bundle.
 Do not configure an unbuilt Git checkout as a Desktop GUI plugin.
 
-## Workspace manifest
+## Create a workspace without editing JSON
+
+In an existing local session, choose **Yeni Workspace** in the side panel **+** menu, or run
+**Multi-Root Workspace: Yeni Workspace** in the command palette. Enter a name, select your
+Git repository folders, add more folders from other locations, choose read/write capabilities,
+and pick a folder for the workspace file. **Oluştur ve aç** saves it and activates it for the session.
+Native dialogs guide every step; no JSON editing is needed. The creation wizard labels are
+currently Turkish. Roots receive names derived from their folder names. Existing manifests
+are never overwritten. Folders must already be Git worktree roots; this does not initialize repos.
+The native initial project chooser is unchanged. Cancellation before the final confirmation
+creates no file; changing sessions before submission cancels creation.
+
+## Workspace manifest (optional manual format)
 
 Example layout (all repo directories already exist):
 
@@ -175,7 +187,9 @@ mutations. Standard denial (including plan-mode edit denial) is preserved. Agent
 `confirmed: true` is not user consent. Saved approvals/unattended behavior remain controlled by OpenCode;
 this MVP does not provide an independent approval UI for agent tools. The built-in shell has its own permissions.
 Selecting a manifest and the explicit Desktop Status command are direct user actions and use read-only RPC;
-they do not prompt for AI tool permissions. Read-only RPC is not an authorization boundary for API clients.
+they do not prompt for AI tool permissions. The new `create` RPC writes a validated manifest
+with exclusive creation and activates it. GUI confirmation precedes that direct user action; it
+is not an authorization boundary for authenticated API clients. Creation is not exposed as an AI tool.
 
 ## CLI and development
 

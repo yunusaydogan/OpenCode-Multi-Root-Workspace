@@ -318,3 +318,30 @@ test("staging a directory never implicitly stages its descendants", async (t) =>
     /file/i,
   );
 });
+test("workspace creator validates selected repos and never overwrites a manifest", async (t) => {
+  const { createWorkspace } = await import("../src/core.mjs");
+  const f = await fixture(t);
+  const ws = await createWorkspace({
+    name: "Personel Portalı",
+    directory: f.base,
+    folders: [f.front, f.back],
+    allowFileWrites: true,
+    allowGitWrites: false,
+  });
+  assert.equal(ws.name, "Personel Portalı");
+  assert.equal(ws.roots.length, 2);
+  assert.equal(ws.allowFileWrites, true);
+  assert.equal((await loadWorkspace(ws.manifest)).roots[0].path, f.front);
+  await assert.rejects(
+    createWorkspace({
+      name: "Personel Portalı",
+      directory: f.base,
+      folders: [f.front, f.back],
+    }),
+    /exist/i,
+  );
+  await assert.rejects(
+    createWorkspace({ name: "invalid", directory: f.base, folders: [f.base] }),
+  );
+  await assert.rejects(readFile(join(f.base, "workspace-invalid.workspace")));
+});

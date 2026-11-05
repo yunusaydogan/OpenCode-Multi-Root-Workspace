@@ -215,3 +215,53 @@ test("custom write guard never upgrades deny and requires ask even under broad a
     assert.equal(denied.effect, "deny");
   }
 });
+test("new workspace wizard selects folders, saves and activates without JSON editing", async () => {
+  const commands = [],
+    requests = [],
+    alerts = [];
+  const session = {
+    key: "local-a",
+    id: "ses_a",
+    location: { directory: "/project" },
+    server: {
+      builtin: true,
+      client: {
+        rpc: () => ({
+          create: async (input, options) => {
+            requests.push({ input, options });
+            return "Workspace oluşturuldu";
+          },
+        }),
+      },
+    },
+  };
+  const selections = ["add", "finish", "all"];
+  const picks = [["/frontend"], ["/backend"], ["/saved"]];
+  const ctx = {
+    add: (_r, fn) => commands.push(fn()),
+    sessions: { current: () => session },
+    desktop: { pick: async () => picks.shift() },
+    dialogs: {
+      prompt: async () => "Personel Portalı",
+      select: async () => selections.shift(),
+      confirm: async () => true,
+      alert: async (a) => alerts.push(a),
+    },
+  };
+  gui.setup(ctx);
+  await commands.find((c) => c.id === "create").run();
+  assert.deepEqual(requests[0].input, {
+    sessionID: "ses_a",
+    name: "Personel Portalı",
+    directory: "/saved",
+    folders: ["/frontend", "/backend"],
+    allowFileWrites: true,
+    allowGitWrites: true,
+  });
+  assert.deepEqual(requests[0].options, { location: session.location });
+  assert.equal(alerts.length, 1);
+  requests.length = 0;
+  ctx.dialogs.prompt = async () => undefined;
+  await commands.find((c) => c.id === "create").run();
+  assert.equal(requests.length, 0);
+});

@@ -3,6 +3,7 @@ import { Plugin } from "@opencode/plugin";
 import { z } from "zod";
 import {
   loadWorkspace,
+  createWorkspace,
   workspaceContext,
   fileOperation,
   fileAccessPath,
@@ -94,6 +95,11 @@ export default Plugin.define({
     };
     registrations.push(
       await ctx.rpc.register(WorkspaceRpc, {
+        create: async (input, call) => {
+          const ws = await createWorkspace(input, call.signal);
+          await ctx.storage.set(key(input.sessionID), ws.manifest);
+          return `“${ws.name}” oluşturuldu ve bu sohbet için açıldı.\n\nDosya: ${ws.manifest}\n\nKlasörler:\n${ws.roots.map((r) => `${r.name}: ${r.path}`).join("\n")}`;
+        },
         select: async ({ sessionID, manifest }, call) => {
           // Validate before replacing the previous selection. No writes to user repos.
           const ws = await loadWorkspace(manifest, call.signal);
