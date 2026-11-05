@@ -78,4 +78,4 @@ acceptance check; the wizard adapter is exercised through the host harness.
 
 ## Persistent workspace hub
 
-22 tests pass, including catalog backfill/deduplication/forget and missing-manifest handling, global Home hub navigation, and creating from Home without an existing chat. The live test creates a manifest in a different directory, opens it from the repo RPC location and verifies the new session location and active workspace. The documented bottom strip is used; native sidebar DOM is not modified.
+22 tests pass, including catalog backfill/deduplication/forget and missing-manifest handling, global Home hub navigation, and creating from Home without an existing chat. The live test creates a manifest in a different directory, opens it from the repo RPC location and verifies the new session location and active workspace. The documented toolbar contribution is used; native sidebar DOM is not modified.

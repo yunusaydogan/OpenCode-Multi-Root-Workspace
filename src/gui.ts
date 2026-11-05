@@ -1,5 +1,4 @@
-import { createComponent } from "solid-js";
-import { Plugin, Command, MenuItem, Slot } from "@opencode/plugin/gui";
+import { Plugin, Command, MenuItem, TitlebarItem } from "@opencode/plugin/gui";
 import { WorkspaceRpc } from "./rpc.ts";
 export default Plugin.define({
   os: ["linux", "macos", "windows"],
@@ -169,15 +168,13 @@ export default Plugin.define({
             "Sohbet değişti. Workspace oluşturmayı yeniden başlatın.",
           );
         if (!session) {
-          const saved = await ctx.client
-            .rpc(WorkspaceRpc)
-            .createSaved({
-              name,
-              directory,
-              folders,
-              allowFileWrites: access !== "read",
-              allowGitWrites: access === "all",
-            });
+          const saved = await ctx.client.rpc(WorkspaceRpc).createSaved({
+            name,
+            directory,
+            folders,
+            allowFileWrites: access !== "read",
+            allowGitWrites: access === "all",
+          });
           await openSaved(saved.manifest);
           return `“${name}” oluşturuldu. Workspace'ler listesinden tekrar açabilirsiniz.`;
         }
@@ -307,15 +304,14 @@ export default Plugin.define({
         void hub();
       },
     }));
-    ctx.add(Slot, () => ({
-      at: "window.bottom" as const,
-      render: () =>
-        createComponent(ctx.ui.Button, {
-          onClick: () => {
-            void hub();
-          },
-          children: "Workspace'ler",
-        }),
+    ctx.add(TitlebarItem, () => ({
+      id: "workspaces",
+      label: "Workspace’ler",
+      title: "Workspace’ler — oluştur, aç ve yönet",
+      icon: "folder" as const,
+      run: () => {
+        void hub();
+      },
     }));
   },
 });

@@ -54,4 +54,4 @@ advertised as a supported remote Desktop workflow.
 
 ## Saved workspace hub
 
-The inspected SlotMap exposes `window.bottom` and session slots, with no sidebar/Home/Projects slot. The persistent workspace catalog is accessed through a global bottom-strip button, including on Home, plus palette and session + menu entries. Exact native sidebar placement is unsupported in this plugin release. Home creation and opening now create a local session; legacy open/status commands still require an existing session.
+The inspected GUI API exposes the `TitlebarItem` registry and session slots, with no sidebar/Home/Projects slot. The persistent workspace catalog is accessed through a compact toolbar shortcut, including on Home, plus palette and session + menu entries. Exact native sidebar placement is unsupported in this plugin release. Home creation and opening now create a local session; legacy open/status commands still require an existing session.

@@ -297,8 +297,14 @@ test("workspace hub works on Home and opens a saved workspace in a local tab", a
   assert.deepEqual(opened, [
     [{ server: "sidecar", id: "ses_saved" }, { focus: true }],
   ]);
-  const slot = commands.find((c) => c.at === "window.bottom");
-  assert.equal(slot.render().children, "Workspace'ler");
+  assert.equal(
+    commands.some((c) => c.at === "window.bottom"),
+    false,
+  );
+  const shortcut = commands.find(
+    (c) => c.id === "workspaces" && c.icon === "folder" && c.label,
+  );
+  assert.equal(shortcut.label, "Workspace’ler");
 });
 test("new workspace on Home saves a manifest and opens a session without an existing chat", async () => {
   const commands = [],

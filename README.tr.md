@@ -58,7 +58,7 @@ Eski dosya açma komutu mevcut sohbet içindir; aşağıdaki Workspace'ler alan�
 
 ## Kod yazmadan yeni workspace
 
-Home dahil tüm ekranların altında **Workspace’ler** düğmesi bulunur. Burada kayıtlı workspace’leri görebilir, birine tıklayıp yeni sohbette açabilir, mevcut `.workspace` dosyasını ekleyebilir veya **Yeni Workspace** seçebilirsiniz. Aynı listeye komut paletindeki **Workspace’ler** komutundan ve sohbetin **+** menüsünden de erişilir.
+Home dahil tüm ekranlarda **Workspace’ler** klasör simgesi bulunur. Sol sekme düzeninde sol panelin altında küçük bir simge, üst sekme düzeninde üst çubukta görünür. Geniş alt şerit kaldırılmıştır. Burada kayıtlı workspace’leri görebilir, birine tıklayıp yeni sohbette açabilir, mevcut `.workspace` dosyasını ekleyebilir veya **Yeni Workspace** seçebilirsiniz. Aynı listeye komut paletindeki **Workspace’ler** komutundan ve sohbetin **+** menüsünden de erişilir.
 
 Liste kalıcıdır; oluşturduğunuz veya açtığınız workspace’ler eklenir. Önceki sürümde sohbetlere bağlı kayıtlar da listeye alınır. **Listeden kaldır** dosyaları veya sohbetleri silmez. Eksik dosya/repolar listede işaretlenir. En fazla 200 kayıt gösterilir.
 
@@ -125,4 +125,4 @@ Repolar arasında ortak commit veya otomatik geri alma yoktur.
 Ayrıntılar: [İngilizce README](README.md), [API sınırları](docs/compatibility.md),
 [test kanıtları](docs/validation.md), [yayın akışı](docs/publishing.md).
 
-Konum sınırı: OpenCode 2.2.5 eklenti API’si sol menüde Home altına bir bölüm ekletmiyor. Bu sürüm desteklenen `window.bottom` alanını kullanır; yerleşik Projects listesi değiştirilmez.
+Konum sınırı: OpenCode 2.2.5 eklenti API’si sol menüde Home altına bir bölüm ekletmiyor. Bu sürüm desteklenen `TitlebarItem` alanını kullanır; yerleşik Projects listesi değiştirilmez.

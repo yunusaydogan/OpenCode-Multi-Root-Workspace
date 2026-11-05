@@ -88,9 +88,9 @@ Do not configure an unbuilt Git checkout as a Desktop GUI plugin.
 
 ## Create a workspace without editing JSON
 
-Use the **Workspace’ler** button in the supported global bottom strip, including on Home. It lists up to 200 saved workspaces, opens one into a new local session, imports a manifest, creates a workspace, or forgets an entry without deleting files/sessions. Previously selected session manifests are backfilled into the catalog. Missing files/repos remain visible with an unavailable label. The catalog persists in plugin storage across sessions.
+Use the **Workspace’ler** button in the supported compact app toolbar, including on Home. It lists up to 200 saved workspaces, opens one into a new local session, imports a manifest, creates a workspace, or forgets an entry without deleting files/sessions. Previously selected session manifests are backfilled into the catalog. Missing files/repos remain visible with an unavailable label. The catalog persists in plugin storage across sessions.
 
-There is no public sidebar/Home/Projects contribution point in the 2.2.5 SDK. This uses `window.bottom`; it does not inject a row beneath native Home or replace the Projects list. The palette and session + menu also expose the hub.
+There is no public sidebar/Home/Projects contribution point in the 2.2.5 SDK. This uses `TitlebarItem`: a compact folder icon in the sidebar footer with vertical tabs, or the top toolbar with horizontal tabs. The label appears on hover. It reserves no full-width bottom strip; it does not inject a row beneath native Home or replace the Projects list. The palette and session + menu also expose the hub.
 
 From Home, choose **Yeni Workspace** in that hub. In an existing local session, choose **Yeni Workspace** in the side panel **+** menu, or run
 **Multi-Root Workspace: Yeni Workspace** in the command palette. Enter a name, select your
