@@ -1,25 +1,14 @@
-# Publication checklist
+# Release checklist
 
-Prepared target: `yunusaydogan/opencode-multi-root-workspace`, public, MIT.
-This is a proposed target until the owner approves publication. No claim of an existing GitHub
-repository or npm release is made. A GitHub connection confirms account identity but does not
-by itself approve publishing the files publicly.
+Repository: [yunusaydogan/OpenCode-Multi-Root-Workspace](https://github.com/yunusaydogan/OpenCode-Multi-Root-Workspace), public, MIT.
+GitHub source publication and npm package publication are separate actions.
 
-1. Review README, license, tests and `docs/validation.md`; run `npm ci && npm run check`.
-2. Inspect `npm pack --dry-run` to exclude temporary repos, absolute machine paths, credentials
-   and node_modules. Source documentation uses example paths only.
-3. Obtain explicit owner approval for the public repository and initial push.
-4. Create the repository on GitHub (or with authenticated `gh repo create`), then push local `main`.
-   Example, after approval and with GitHub CLI configured:
+1. Review the README, license, compatibility notes, and validation evidence against the code.
+2. Run `npm ci && npm run check`. With the target OpenCode binary installed, run `npm run test:live` with `OPENCODE_BIN` set.
+3. Run `npm pack` and inspect its contents. Exclude credentials, temporary repositories, private paths, and node_modules.
+4. Push the reviewed commits to the existing repository with the maintainer's authorization. Confirm GitHub CI passes.
+5. Before tagging a release, smoke-test its installed package on Desktop and update the version consistently in package.json and package-lock.json.
+6. Optionally attach the built `.tgz` to a GitHub release. Plain source downloads require installation/building.
+7. npm publication additionally requires package-name availability, ownership, maintainer authorization, npm credentials/2FA, and a clean package installation check.
 
-   ```sh
-   gh repo create yunusaydogan/opencode-multi-root-workspace --public --source=. --remote=origin --push
-   ```
-
-5. Confirm GitHub CI passes. Set repository description, topics, and the correct repository URL
-   in package.json. Tag `v0.1.0` only after smoke testing the packaged artifact on Desktop.
-6. Optionally attach the built `.tgz` to a GitHub release. Plain source downloads need a build.
-7. npm publication is a **separate** action requiring name availability, ownership, approval,
-   npm credentials/2FA and a clean packed-artifact smoke test. Never assume a GitHub push is npm publication.
-
-No automatic npm publish workflow is included. Publishing is not needed for local installation.
+No automatic npm publication workflow is included. GitHub publication does not imply an npm release.
