@@ -1,3 +1,4 @@
+import { mkdir } from "node:fs/promises";
 import { workspaceCatalog } from "./catalog.mjs";
 import { relative, isAbsolute, sep, parse, dirname } from "node:path";
 import { Plugin } from "@opencode/plugin";
@@ -5,6 +6,7 @@ import { z } from "zod";
 import {
   loadWorkspace,
   createWorkspace,
+  savedWorkspaceDirectory,
   workspaceContext,
   fileOperation,
   fileAccessPath,
@@ -97,6 +99,7 @@ export default Plugin.define({
     };
     registrations.push(
       await ctx.rpc.register(WorkspaceRpc, {
+        defaults: async () => ({ directory: savedWorkspaceDirectory() }),
         list: async () => catalog.list(),
         forget: async ({ manifest }) => {
           await catalog.forget(manifest);
@@ -113,7 +116,12 @@ export default Plugin.define({
           return { sessionID: session.id, manifest: ws.manifest };
         },
         createSaved: async (input, call) => {
-          const ws = await createWorkspace(input, call.signal);
+          const directory = input.directory ?? savedWorkspaceDirectory();
+          if (!input.directory) await mkdir(directory, { recursive: true });
+          const ws = await createWorkspace(
+            { ...input, directory },
+            call.signal,
+          );
           await catalog.remember(ws.manifest, call.signal);
           return { manifest: ws.manifest };
         },

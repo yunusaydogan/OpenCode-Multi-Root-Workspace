@@ -345,3 +345,14 @@ test("workspace creator validates selected repos and never overwrites a manifest
   );
   await assert.rejects(readFile(join(f.base, "workspace-invalid.workspace")));
 });
+test("default workspace directory follows the OpenCode config location", async () => {
+  const { savedWorkspaceDirectory } = await import("../src/core.mjs");
+  assert.equal(
+    savedWorkspaceDirectory({ OPENCODE_CONFIG_DIR: "/custom" }, "/home/test"),
+    join("/custom", "workspaces"),
+  );
+  assert.equal(
+    savedWorkspaceDirectory({ XDG_CONFIG_HOME: "/xdg" }, "/home/test"),
+    join("/xdg", "opencode", "workspaces"),
+  );
+});

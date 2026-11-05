@@ -95,12 +95,12 @@ There is no public sidebar/Home/Projects contribution point in the 2.2.5 SDK. Th
 From Home, choose **Yeni Workspace** in that hub. In an existing local session, choose **Yeni Workspace** in the side panel **+** menu, or run
 **Multi-Root Workspace: Yeni Workspace** in the command palette. Enter a name, select your
 Git repository folders, add more folders from other locations, choose read/write capabilities,
-and pick a folder for the workspace file. **Oluştur ve aç** saves it and activates it for the current session, or creates and opens a local session when invoked from Home.
+and choose the default save location or optionally pick a custom folder. **Oluştur ve aç** saves the manifest and opens a new local session. Creation never routes through the current chat location, so a moved/deleted old project does not block it. Default manifests live under the OpenCode config directory’s `workspaces` subfolder; the final message shows the exact file path.
 Native dialogs guide every step; no JSON editing is needed. The creation wizard labels are
 currently Turkish. Roots receive names derived from their folder names. Existing manifests
 are never overwritten. Folders must already be Git worktree roots; this does not initialize repos.
 The native initial project chooser is unchanged. Cancellation before the final confirmation
-creates no file; changing sessions before submission cancels creation.
+creates no file. New workspace creation is independent of the active chat.
 
 ## Workspace manifest (optional manual format)
 

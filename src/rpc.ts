@@ -3,6 +3,10 @@ import { z } from "zod";
 export const WorkspaceRpc = Rpc.define({
   id: "multi-root-workspace",
   methods: {
+    defaults: {
+      input: z.object({}),
+      output: z.object({ directory: z.string() }),
+    },
     list: {
       input: z.object({}),
       output: z.array(
@@ -23,7 +27,7 @@ export const WorkspaceRpc = Rpc.define({
     createSaved: {
       input: z.object({
         name: z.string().min(1).max(120),
-        directory: z.string(),
+        directory: z.string().min(1).optional(),
         folders: z.array(z.string()).min(1).max(32),
         allowFileWrites: z.boolean(),
         allowGitWrites: z.boolean(),

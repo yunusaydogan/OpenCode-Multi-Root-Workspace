@@ -1,7 +1,7 @@
 // Optional: requires an installed OpenCode 2.2.5 binary, never an LLM API key.
 import assert from "node:assert/strict";
 import { spawn, execFileSync } from "node:child_process";
-import { mkdtemp, mkdir, writeFile, rm } from "node:fs/promises";
+import { mkdtemp, mkdir, writeFile, rm, readFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { resolve, join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -126,15 +126,13 @@ try {
   assert.ok(catalog.some((item) => item.name === "Created smoke"));
   const saveDirectory = join(base, "saved-workspaces");
   await mkdir(saveDirectory);
-  const saved = await client
-    .rpc(WorkspaceRpc)
-    .createSaved({
-      name: "Home smoke",
-      directory: saveDirectory,
-      folders: [repo],
-      allowFileWrites: false,
-      allowGitWrites: false,
-    });
+  const saved = await client.rpc(WorkspaceRpc).createSaved({
+    name: "Home smoke",
+    directory: saveDirectory,
+    folders: [repo],
+    allowFileWrites: false,
+    allowGitWrites: false,
+  });
   const opened = await client
     .rpc(WorkspaceRpc)
     .open({ manifest: saved.manifest }, { location });
@@ -158,6 +156,49 @@ try {
       (item) => item.manifest === saved.manifest,
     ),
   );
+  await assert.rejects(
+    client
+      .rpc(WorkspaceRpc)
+      .create(
+        {
+          sessionID: session.id,
+          name: "Stale scoped request",
+          directory: base,
+          folders: [repo],
+          allowFileWrites: false,
+          allowGitWrites: false,
+        },
+        { location: { directory: join(base, "removed-project") } },
+      ),
+  );
+  const defaults = await client.rpc(WorkspaceRpc).defaults({});
+  assert.equal(defaults.directory, join(config, "workspaces"));
+  const automatic = await client
+    .rpc(WorkspaceRpc)
+    .createSaved({
+      name: "Automatic save",
+      folders: [repo],
+      allowFileWrites: false,
+      allowGitWrites: false,
+    });
+  assert.equal(dirname(automatic.manifest), defaults.directory);
+  assert.equal(
+    JSON.parse(await readFile(automatic.manifest, "utf8")).name,
+    "Automatic save",
+  );
+  const automaticSession = await client
+    .rpc(WorkspaceRpc)
+    .open({ manifest: automatic.manifest });
+  assert.match(
+    await client
+      .rpc(WorkspaceRpc)
+      .status(
+        { sessionID: automaticSession.sessionID },
+        { location: { directory: defaults.directory } },
+      ),
+    /Automatic save/,
+  );
+  await client.session.remove({ sessionID: automaticSession.sessionID });
   await client.session.remove({ sessionID: opened.sessionID });
   await client.rpc(WorkspaceRpc).clear({ sessionID: session.id }, { location });
   await assert.rejects(

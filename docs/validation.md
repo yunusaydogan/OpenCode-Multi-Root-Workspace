@@ -43,7 +43,7 @@ replace the tested API. Re-run `npm audit` before a release; the registry can ch
 7. In a disposable repo with a local bare remote, review staged diff; approve stage/commit/push
    separately. Verify the other repo and unrelated upstream branches stay unchanged.
 
-Final automated result: **22/22 tests passed**, TypeScript check passed, GUI build passed,
+Final automated result: **23/23 tests passed**, TypeScript check passed, GUI build passed,
 source and packed-artifact live-server smoke tests passed. Reproduce the live check with:
 
 ```sh
@@ -79,3 +79,7 @@ acceptance check; the wizard adapter is exercised through the host harness.
 ## Persistent workspace hub
 
 22 tests pass, including catalog backfill/deduplication/forget and missing-manifest handling, global Home hub navigation, and creating from Home without an existing chat. The live test creates a manifest in a different directory, opens it from the repo RPC location and verifies the new session location and active workspace. The documented toolbar contribution is used; native sidebar DOM is not modified.
+
+## Save-flow regression
+
+A scoped create RPC routed through a chat whose project directory no longer exists returns 404. The wizard now uses the Desktop global client for createSaved/open and always opens a new local session. Regression coverage verifies a stale active chat is never used, automatic saving needs no second directory picker, and the live server writes and reads a manifest under its isolated config/workspaces directory before opening it. Native option lists now have visible instructional placeholders rather than relying on screen-reader-only titles.

@@ -215,51 +215,59 @@ test("custom write guard never upgrades deny and requires ask even under broad a
     assert.equal(denied.effect, "deny");
   }
 });
-test("new workspace wizard selects folders, saves and activates without JSON editing", async () => {
+test("creation ignores an active chat whose old project directory is missing", async () => {
   const commands = [],
     requests = [],
+    opened = [],
     alerts = [];
   const session = {
-    key: "local-a",
-    id: "ses_a",
-    location: { directory: "/project" },
+    key: "stale",
+    id: "ses_old",
+    location: { directory: "/missing/project" },
     server: {
       builtin: true,
       client: {
-        rpc: () => ({
-          create: async (input, options) => {
-            requests.push({ input, options });
-            return "Workspace oluşturuldu";
-          },
-        }),
+        rpc: () => {
+          throw Error("Must not use stale session RPC");
+        },
       },
     },
   };
-  const selections = ["add", "finish", "all"];
+  const choices = ["add", "finish", "all", "custom"];
   const picks = [["/frontend"], ["/backend"], ["/saved"]];
   const ctx = {
     add: (_r, fn) => commands.push(fn()),
     sessions: { current: () => session },
+    client: {
+      rpc: () => ({
+        defaults: async () => ({ directory: "/default/workspaces" }),
+        createSaved: async (input) => {
+          requests.push(input);
+          return { manifest: "/saved/portal.workspace" };
+        },
+        open: async () => ({ sessionID: "ses_new" }),
+      }),
+    },
+    tabs: { open: (args) => opened.push(args) },
     desktop: { pick: async () => picks.shift() },
     dialogs: {
       prompt: async () => "Personel Portalı",
-      select: async () => selections.shift(),
+      select: async () => choices.shift(),
       confirm: async () => true,
       alert: async (a) => alerts.push(a),
     },
   };
   gui.setup(ctx);
   await commands.find((c) => c.id === "create").run();
-  assert.deepEqual(requests[0].input, {
-    sessionID: "ses_a",
+  assert.deepEqual(requests[0], {
     name: "Personel Portalı",
     directory: "/saved",
     folders: ["/frontend", "/backend"],
     allowFileWrites: true,
     allowGitWrites: true,
   });
-  assert.deepEqual(requests[0].options, { location: session.location });
-  assert.equal(alerts.length, 1);
+  assert.equal(opened[0].id, "ses_new");
+  assert.match(alerts[0].description, /saved\/portal.workspace/);
   requests.length = 0;
   ctx.dialogs.prompt = async () => undefined;
   await commands.find((c) => c.id === "create").run();
@@ -310,13 +318,14 @@ test("new workspace on Home saves a manifest and opens a session without an exis
   const commands = [],
     opened = [],
     saved = [];
-  const choices = ["finish", "read"];
+  const choices = ["finish", "read", "default"];
   const picks = [["/repo"], ["/saved"]];
   const ctx = {
     add: (_r, fn) => commands.push(fn()),
     sessions: { current: () => undefined },
     client: {
       rpc: () => ({
+        defaults: async () => ({ directory: "/default/workspaces" }),
         createSaved: async (input) => {
           saved.push(input);
           return { manifest: "/saved/new.workspace" };
@@ -337,5 +346,7 @@ test("new workspace on Home saves a manifest and opens a session without an exis
   await commands.find((c) => c.id === "create").run();
   assert.equal(saved[0].name, "New portal");
   assert.equal(saved[0].allowFileWrites, false);
+  assert.equal(saved[0].directory, undefined);
+  assert.equal(picks.length, 1);
   assert.equal(opened[0].id, "ses_new");
 });

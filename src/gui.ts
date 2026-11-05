@@ -79,7 +79,6 @@ export default Plugin.define({
     }));
     const create = () =>
       report(async () => {
-        const session = ctx.sessions.current() ? current() : undefined;
         if (!ctx.desktop)
           throw new Error(
             "Workspace oluşturmak için OpenCode Desktop kullanın.",
@@ -103,6 +102,8 @@ export default Plugin.define({
           if (!folders.length) return;
           const action = await ctx.dialogs.select({
             title: `${folders.length} klasör seçildi`,
+            placeholder: "Klasör ekleyin veya Devam et seçin",
+            current: "finish",
             options: [
               {
                 title: "Başka klasör ekle",
@@ -123,6 +124,7 @@ export default Plugin.define({
         }
         const access = await ctx.dialogs.select({
           title: "Workspace erişimi",
+          placeholder: "Bu workspace için erişim türünü seçin",
           current: "read",
           options: [
             {
@@ -145,50 +147,61 @@ export default Plugin.define({
           ],
         });
         if (!access) return;
-        const [directory] = await ctx.desktop.pick({
-          directory: true,
-          title: "Workspace dosyasının kaydedileceği klasörü seçin",
+        const defaults = await ctx.client.rpc(WorkspaceRpc).defaults({});
+        const saveMode = await ctx.dialogs.select({
+          title: "Workspace dosyasını kaydet",
+          placeholder: "Workspace dosyası nereye kaydedilsin?",
+          current: "default",
+          options: [
+            {
+              title: "Varsayılan konuma kaydet",
+              value: "default",
+              description: defaults.directory,
+            },
+            {
+              title: "Farklı bir kayıt klasörü seç",
+              value: "custom",
+              description:
+                "Repo ekleme adımı değil; .workspace dosyasının konumu.",
+            },
+            { title: "İptal", value: "cancel" },
+          ],
         });
-        if (!directory) return;
+        if (!saveMode || saveMode === "cancel") return;
+        let directory: string | undefined;
+        if (saveMode === "custom") {
+          [directory] = await ctx.desktop.pick({
+            directory: true,
+            title: "Workspace dosyasının kayıt konumu (repo eklenmez)",
+          });
+          if (!directory) return;
+        }
         if (
           !(await ctx.dialogs.confirm({
             title: "Workspace oluştur",
-            description: `${name}\n\nKlasörler:\n${folders.join("\n")}\n\nKaydetme konumu: ${directory}\n\nSeçilen klasörlerin Git repo kökü olması gerekir. Mevcut dosyaların üzerine yazılmaz.`,
+            description: `${name}\n\nKlasörler:\n${folders.join("\n")}\n\nWorkspace dosyasının kayıt konumu: ${directory ?? defaults.directory}\n\nSeçilen klasörlerin Git repo kökü olması gerekir. Mevcut dosyaların üzerine yazılmaz.`,
             confirm: "Oluştur ve aç",
             cancel: "İptal",
           }))
         )
           return;
-        if (
-          ctx.sessions.current()?.key !== session?.key ||
-          ctx.sessions.current()?.location?.directory !==
-            session?.location?.directory
-        )
-          throw new Error(
-            "Sohbet değişti. Workspace oluşturmayı yeniden başlatın.",
-          );
-        if (!session) {
-          const saved = await ctx.client.rpc(WorkspaceRpc).createSaved({
+        const saved = await ctx.client
+          .rpc(WorkspaceRpc)
+          .createSaved({
             name,
-            directory,
+            ...(directory ? { directory } : {}),
             folders,
             allowFileWrites: access !== "read",
             allowGitWrites: access === "all",
           });
+        try {
           await openSaved(saved.manifest);
-          return `“${name}” oluşturuldu. Workspace'ler listesinden tekrar açabilirsiniz.`;
+        } catch (error) {
+          throw new Error(
+            `Workspace dosyası kaydedildi: ${saved.manifest}\nAncak sohbet açılamadı. Workspace’ler listesinden yeniden açabilirsiniz.\n${error instanceof Error ? error.message : String(error)}`,
+          );
         }
-        return session.server.client.rpc(WorkspaceRpc).create(
-          {
-            sessionID: session.id,
-            name,
-            directory,
-            folders,
-            allowFileWrites: access !== "read",
-            allowGitWrites: access === "all",
-          },
-          { location: session.location },
-        );
+        return `“${name}” kaydedildi ve açıldı.\n\nWorkspace dosyası: ${saved.manifest}`;
       });
     ctx.add(Command, () => ({
       id: "create",

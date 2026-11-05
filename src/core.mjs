@@ -1,4 +1,5 @@
 import { realpath, readFile, stat, open, writeFile } from "node:fs/promises";
+import { homedir } from "node:os";
 import { constants } from "node:fs";
 import {
   resolve,
@@ -77,6 +78,13 @@ async function resolveWorkspace(input, path, signal) {
     roots.push({ name: item.name, path: root });
   }
   return { ...data, roots, manifest: path };
+}
+export function savedWorkspaceDirectory(env = process.env, home = homedir()) {
+  return resolve(
+    env.OPENCODE_CONFIG_DIR ||
+      join(env.XDG_CONFIG_HOME || join(home, ".config"), "opencode"),
+    "workspaces",
+  );
 }
 export async function createWorkspace(input, signal) {
   const request = z

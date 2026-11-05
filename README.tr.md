@@ -68,9 +68,11 @@ Aynı akış komut paletinde **Multi-Root Workspace: Yeni Workspace** olarak da 
 1. Workspace adını yazın.
 2. Klasör seçicisinden frontend/backend Git repolarınızı seçin. Farklı konumlar için **Başka klasör ekle** kullanın.
 3. **Devam et** ile yalnız okuma, dosya düzenleme veya dosya düzenleme + Git erişimini seçin.
-4. Workspace dosyasını kaydedeceğiniz klasörü seçin ve **Oluştur ve aç** düğmesine basın.
+4. **Varsayılan konuma kaydet** seçin. İsterseniz **Farklı bir kayıt klasörü seç** ile konumu değiştirebilirsiniz.
+5. Özeti kontrol edip **Oluştur ve aç** düğmesine basın.
 
-`.workspace` dosyası otomatik oluşturulur; mevcut sohbette veya Home üzerinden oluştururken yeni bir sohbette açılır. JSON düzenlemeniz gerekmez.
+`.workspace` dosyası otomatik oluşturulur ve her zaman yeni bir yerel sohbette açılır. Açık sohbetin klasörü taşınmış/silinmiş olsa da oluşturma ona bağlı değildir. JSON düzenlemeniz gerekmez.
+Varsayılan kayıt konumu OpenCode yapılandırma klasörünün `workspaces` alt klasörüdür (normalde `~/.config/opencode/workspaces`). Başarı mesajında dosyanın tam yolu gösterilir.
 Repo adları klasör adlarından otomatik üretilir. Mevcut workspace dosyasının üzerine yazılmaz;
 aynı konumda aynı ad varsa farklı bir workspace adı veya kayıt klasörü seçin.
 Seçilen klasörler önceden var olan Git repo/worktree kökleri olmalıdır. Bu işlem yeni Git reposu oluşturmaz.
