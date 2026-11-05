@@ -154,7 +154,7 @@ export async function main(args = process.argv.slice(2)) {
       "Existing OpenCode settings were preserved. Do not also list this package in plugins config: use one installation method.",
     );
     console.log(
-      "Restart OpenCode Desktop. Create/open a local session, then run: Multi-Root Workspace: Open .workspace",
+      "Restart OpenCode Desktop. On Home, use the Workspace'ler button to create, import or open a saved workspace.",
     );
   } finally {
     await rm(stage, { recursive: true, force: true });
