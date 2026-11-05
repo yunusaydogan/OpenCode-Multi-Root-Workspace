@@ -51,3 +51,7 @@ The GUI is experimental and can change across OpenCode releases. Remote manifest
 to a different machine, so this release deliberately rejects picking files for non-sidecar servers.
 An API client can use the RPC contract against a server with server-side paths; this is not
 advertised as a supported remote Desktop workflow.
+
+## Saved workspace hub
+
+The inspected SlotMap exposes `window.bottom` and session slots, with no sidebar/Home/Projects slot. The persistent workspace catalog is accessed through a global bottom-strip button, including on Home, plus palette and session + menu entries. Exact native sidebar placement is unsupported in this plugin release. Home creation and opening now create a local session; legacy open/status commands still require an existing session.

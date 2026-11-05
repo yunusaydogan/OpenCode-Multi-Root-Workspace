@@ -54,11 +54,15 @@ Desktop'ı yeniden başlatın. Settings > Extensions > Plugins bölümünde ekle
 Bir klasör açın ve ilk mesajınızı göndererek sohbet oluşturun. Komut paletinden
 **Multi-Root Workspace: Open .workspace** çalıştırın ve manifest dosyanızı seçin.
 **Status** her reponun durumunu, **Clear selection** mevcut sohbetin seçimini yönetir.
-Dosya seçimi yalnız yerel Desktop sunucusundaki mevcut sohbetlerde desteklenir.
+Eski dosya açma komutu mevcut sohbet içindir; aşağıdaki Workspace'ler alanı Home ekranında da çalışır.
 
 ## Kod yazmadan yeni workspace
 
-Bir yerel sohbet açtıktan sonra yan panelin **+** menüsünde **Yeni Workspace** seçin.
+Home dahil tüm ekranların altında **Workspace’ler** düğmesi bulunur. Burada kayıtlı workspace’leri görebilir, birine tıklayıp yeni sohbette açabilir, mevcut `.workspace` dosyasını ekleyebilir veya **Yeni Workspace** seçebilirsiniz. Aynı listeye komut paletindeki **Workspace’ler** komutundan ve sohbetin **+** menüsünden de erişilir.
+
+Liste kalıcıdır; oluşturduğunuz veya açtığınız workspace’ler eklenir. Önceki sürümde sohbetlere bağlı kayıtlar da listeye alınır. **Listeden kaldır** dosyaları veya sohbetleri silmez. Eksik dosya/repolar listede işaretlenir. En fazla 200 kayıt gösterilir.
+
+Yeni workspace oluşturmak için açık bir sohbet gerekmez. Mevcut bir yerel sohbette yan panelin **+** menüsünde **Yeni Workspace** de kullanılabilir.
 Aynı akış komut paletinde **Multi-Root Workspace: Yeni Workspace** olarak da bulunur.
 
 1. Workspace adını yazın.
@@ -66,7 +70,7 @@ Aynı akış komut paletinde **Multi-Root Workspace: Yeni Workspace** olarak da 
 3. **Devam et** ile yalnız okuma, dosya düzenleme veya dosya düzenleme + Git erişimini seçin.
 4. Workspace dosyasını kaydedeceğiniz klasörü seçin ve **Oluştur ve aç** düğmesine basın.
 
-`.workspace` dosyası otomatik oluşturulur ve mevcut sohbette açılır; JSON düzenlemeniz gerekmez.
+`.workspace` dosyası otomatik oluşturulur; mevcut sohbette veya Home üzerinden oluştururken yeni bir sohbette açılır. JSON düzenlemeniz gerekmez.
 Repo adları klasör adlarından otomatik üretilir. Mevcut workspace dosyasının üzerine yazılmaz;
 aynı konumda aynı ad varsa farklı bir workspace adı veya kayıt klasörü seçin.
 Seçilen klasörler önceden var olan Git repo/worktree kökleri olmalıdır. Bu işlem yeni Git reposu oluşturmaz.
@@ -120,3 +124,5 @@ Repolar arasında ortak commit veya otomatik geri alma yoktur.
 
 Ayrıntılar: [İngilizce README](README.md), [API sınırları](docs/compatibility.md),
 [test kanıtları](docs/validation.md), [yayın akışı](docs/publishing.md).
+
+Konum sınırı: OpenCode 2.2.5 eklenti API’si sol menüde Home altına bir bölüm ekletmiyor. Bu sürüm desteklenen `window.bottom` alanını kullanır; yerleşik Projects listesi değiştirilmez.

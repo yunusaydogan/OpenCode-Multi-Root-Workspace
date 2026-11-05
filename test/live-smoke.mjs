@@ -104,19 +104,17 @@ try {
   );
   const gui = await client.plugin.gui({ id: "multi-root-workspace", location });
   assert.ok(JSON.stringify(gui).length > 1000, "GUI bundle missing");
-  const created = await client
-    .rpc(WorkspaceRpc)
-    .create(
-      {
-        sessionID: session.id,
-        name: "Created smoke",
-        directory: base,
-        folders: [repo],
-        allowFileWrites: false,
-        allowGitWrites: false,
-      },
-      { location },
-    );
+  const created = await client.rpc(WorkspaceRpc).create(
+    {
+      sessionID: session.id,
+      name: "Created smoke",
+      directory: base,
+      folders: [repo],
+      allowFileWrites: false,
+      allowGitWrites: false,
+    },
+    { location },
+  );
   assert.match(created, /Created smoke/);
   assert.match(
     await client
@@ -124,6 +122,43 @@ try {
       .status({ sessionID: session.id }, { location }),
     /Created smoke/,
   );
+  const catalog = await client.rpc(WorkspaceRpc).list({});
+  assert.ok(catalog.some((item) => item.name === "Created smoke"));
+  const saveDirectory = join(base, "saved-workspaces");
+  await mkdir(saveDirectory);
+  const saved = await client
+    .rpc(WorkspaceRpc)
+    .createSaved({
+      name: "Home smoke",
+      directory: saveDirectory,
+      folders: [repo],
+      allowFileWrites: false,
+      allowGitWrites: false,
+    });
+  const opened = await client
+    .rpc(WorkspaceRpc)
+    .open({ manifest: saved.manifest }, { location });
+  assert.equal(
+    (await client.session.get({ sessionID: opened.sessionID })).location
+      .directory,
+    saveDirectory,
+  );
+  assert.match(
+    await client
+      .rpc(WorkspaceRpc)
+      .status(
+        { sessionID: opened.sessionID },
+        { location: { directory: saveDirectory } },
+      ),
+    /Home smoke/,
+  );
+  await client.rpc(WorkspaceRpc).forget({ manifest: saved.manifest });
+  assert.ok(
+    !(await client.rpc(WorkspaceRpc).list({})).some(
+      (item) => item.manifest === saved.manifest,
+    ),
+  );
+  await client.session.remove({ sessionID: opened.sessionID });
   await client.rpc(WorkspaceRpc).clear({ sessionID: session.id }, { location });
   await assert.rejects(
     client.rpc(WorkspaceRpc).status({ sessionID: session.id }, { location }),

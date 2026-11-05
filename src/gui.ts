@@ -1,4 +1,5 @@
-import { Plugin, Command, MenuItem } from "@opencode/plugin/gui";
+import { createComponent } from "solid-js";
+import { Plugin, Command, MenuItem, Slot } from "@opencode/plugin/gui";
 import { WorkspaceRpc } from "./rpc.ts";
 export default Plugin.define({
   os: ["linux", "macos", "windows"],
@@ -11,7 +12,7 @@ export default Plugin.define({
         );
       return s;
     };
-    const report = async (action: () => Promise<string | undefined>) => {
+    const report = async (action: () => Promise<string | void>) => {
       try {
         const result = await action();
         if (result)
@@ -79,7 +80,7 @@ export default Plugin.define({
     }));
     const create = () =>
       report(async () => {
-        const session = current();
+        const session = ctx.sessions.current() ? current() : undefined;
         if (!ctx.desktop)
           throw new Error(
             "Workspace oluşturmak için OpenCode Desktop kullanın.",
@@ -160,13 +161,26 @@ export default Plugin.define({
         )
           return;
         if (
-          ctx.sessions.current()?.key !== session.key ||
+          ctx.sessions.current()?.key !== session?.key ||
           ctx.sessions.current()?.location?.directory !==
-            session.location?.directory
+            session?.location?.directory
         )
           throw new Error(
             "Sohbet değişti. Workspace oluşturmayı yeniden başlatın.",
           );
+        if (!session) {
+          const saved = await ctx.client
+            .rpc(WorkspaceRpc)
+            .createSaved({
+              name,
+              directory,
+              folders,
+              allowFileWrites: access !== "read",
+              allowGitWrites: access === "all",
+            });
+          await openSaved(saved.manifest);
+          return `“${name}” oluşturuldu. Workspace'ler listesinden tekrar açabilirsiniz.`;
+        }
         return session.server.client.rpc(WorkspaceRpc).create(
           {
             sessionID: session.id,
@@ -193,6 +207,115 @@ export default Plugin.define({
       run: () => {
         void create();
       },
+    }));
+    const openSaved = async (manifest: string) => {
+      const result = await ctx.client.rpc(WorkspaceRpc).open({ manifest });
+      ctx.tabs.open(
+        { server: "sidecar", id: result.sessionID },
+        { focus: true },
+      );
+    };
+    const hub = () =>
+      report(async () => {
+        while (true) {
+          const items = await ctx.client.rpc(WorkspaceRpc).list({});
+          const choice = await ctx.dialogs.select({
+            title: "Workspace'ler",
+            options: [
+              {
+                title: "Yeni Workspace",
+                value: "new",
+                description: "Ad verin, Git klasörlerini seçin ve kaydedin.",
+              },
+              {
+                title: "Mevcut workspace ekle",
+                value: "import",
+                description:
+                  ".workspace dosyası seçerek listeye ekleyin ve açın.",
+              },
+              ...items.map((item) => ({
+                title:
+                  item.name +
+                  (item.available ? "" : " — dosya veya repo bulunamadı"),
+                value: "open:" + item.manifest,
+                description: `${item.roots} repo · ${item.manifest}`,
+              })),
+              ...(items.length
+                ? [
+                    {
+                      title: "Listeden workspace kaldır",
+                      value: "remove",
+                      description: "Dosyaları ve sohbetleri silmez.",
+                    },
+                  ]
+                : []),
+            ],
+          });
+          if (!choice) return;
+          if (choice === "new") {
+            await create();
+            return;
+          }
+          if (choice === "import") {
+            const [manifest] =
+              (await ctx.desktop?.pick({
+                extensions: ["workspace"],
+                title: "Workspace seçin",
+              })) ?? [];
+            if (manifest) await openSaved(manifest);
+            return;
+          }
+          if (choice === "remove") {
+            const manifest = await ctx.dialogs.select({
+              title: "Listeden kaldırılacak workspace",
+              options: items.map((item) => ({
+                title: item.name,
+                value: item.manifest,
+                description: item.manifest,
+              })),
+            });
+            if (
+              manifest &&
+              (await ctx.dialogs.confirm({
+                title: "Listeden kaldır?",
+                description:
+                  "Workspace dosyası, repolar ve mevcut sohbetler korunacak.",
+                confirm: "Listeden kaldır",
+              }))
+            )
+              await ctx.client.rpc(WorkspaceRpc).forget({ manifest });
+            continue;
+          }
+          if (choice.startsWith("open:")) {
+            await openSaved(choice.slice(5));
+            return;
+          }
+        }
+      });
+    ctx.add(Command, () => ({
+      id: "workspaces",
+      title: "Workspace'ler",
+      keywords: "home list workspace kayıtlı projeler",
+      run: hub,
+    }));
+    ctx.add(MenuItem, () => ({
+      id: "workspaces",
+      menu: "session.panel" as const,
+      title: "Workspace'ler",
+      icon: "folder" as const,
+      run: () => {
+        void hub();
+      },
+    }));
+    ctx.add(Slot, () => ({
+      at: "window.bottom" as const,
+      render: () =>
+        createComponent(ctx.ui.Button, {
+          onClick: () => {
+            void hub();
+          },
+          children: "Workspace'ler",
+        }),
     }));
   },
 });

@@ -25,7 +25,7 @@ implemented; a custom explorer panel is not. See the [capability matrix](docs/co
 
 - OpenCode Desktop **2.2.5**. V1 (`@opencode-ai/plugin`) is not supported.
 - Git on the OpenCode server's PATH. Node **22.18+** and npm to build/check the plugin and use the CLI.
-- Existing local session on Desktop's built-in server. Remote servers and draft tabs are rejected by the picker.
+- Desktop's built-in local server. The global Workspace hub works from Home without an existing session; the legacy selection/status commands remain session-scoped.
 - Trusted repositories and manifest. Only Linux/Pardus was exercised; Windows/macOS are unverified.
 
 ## Install with the platform scripts
@@ -88,10 +88,14 @@ Do not configure an unbuilt Git checkout as a Desktop GUI plugin.
 
 ## Create a workspace without editing JSON
 
-In an existing local session, choose **Yeni Workspace** in the side panel **+** menu, or run
+Use the **Workspace’ler** button in the supported global bottom strip, including on Home. It lists up to 200 saved workspaces, opens one into a new local session, imports a manifest, creates a workspace, or forgets an entry without deleting files/sessions. Previously selected session manifests are backfilled into the catalog. Missing files/repos remain visible with an unavailable label. The catalog persists in plugin storage across sessions.
+
+There is no public sidebar/Home/Projects contribution point in the 2.2.5 SDK. This uses `window.bottom`; it does not inject a row beneath native Home or replace the Projects list. The palette and session + menu also expose the hub.
+
+From Home, choose **Yeni Workspace** in that hub. In an existing local session, choose **Yeni Workspace** in the side panel **+** menu, or run
 **Multi-Root Workspace: Yeni Workspace** in the command palette. Enter a name, select your
 Git repository folders, add more folders from other locations, choose read/write capabilities,
-and pick a folder for the workspace file. **Oluştur ve aç** saves it and activates it for the session.
+and pick a folder for the workspace file. **Oluştur ve aç** saves it and activates it for the current session, or creates and opens a local session when invoked from Home.
 Native dialogs guide every step; no JSON editing is needed. The creation wizard labels are
 currently Turkish. Roots receive names derived from their folder names. Existing manifests
 are never overwritten. Folders must already be Git worktree roots; this does not initialize repos.
@@ -215,3 +219,5 @@ boundaries. Run `npm ci && npm run check`. No telemetry, no stored credentials. 
 issue privately to the maintainer rather than placing sensitive repository paths in an issue.
 
 MIT License. Not an official OpenCode product.
+
+The authenticated RPC also exposes list/open/createSaved/forget for the hub. These are direct user/client operations, not AI tools. Opening creates a new session at the manifest directory. Forgetting only removes its catalog entry.

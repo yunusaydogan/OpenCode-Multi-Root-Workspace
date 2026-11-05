@@ -265,3 +265,71 @@ test("new workspace wizard selects folders, saves and activates without JSON edi
   await commands.find((c) => c.id === "create").run();
   assert.equal(requests.length, 0);
 });
+test("workspace hub works on Home and opens a saved workspace in a local tab", async () => {
+  const commands = [],
+    opened = [];
+  const manifest = "/saved/portal.workspace";
+  const ctx = {
+    add: (_r, fn) => commands.push(fn()),
+    sessions: { current: () => undefined },
+    client: {
+      rpc: () => ({
+        list: async () => [
+          { name: "Portal", manifest, roots: 2, available: true },
+        ],
+        open: async ({ manifest: path }) => {
+          assert.equal(path, manifest);
+          return { sessionID: "ses_saved", manifest };
+        },
+      }),
+    },
+    tabs: { open: (...args) => opened.push(args) },
+    dialogs: {
+      select: async () => "open:" + manifest,
+      alert: async (e) => {
+        throw Error(e.description);
+      },
+    },
+    ui: { Button: (props) => props },
+  };
+  gui.setup(ctx);
+  await commands.find((c) => c.id === "workspaces" && c.keywords).run();
+  assert.deepEqual(opened, [
+    [{ server: "sidecar", id: "ses_saved" }, { focus: true }],
+  ]);
+  const slot = commands.find((c) => c.at === "window.bottom");
+  assert.equal(slot.render().children, "Workspace'ler");
+});
+test("new workspace on Home saves a manifest and opens a session without an existing chat", async () => {
+  const commands = [],
+    opened = [],
+    saved = [];
+  const choices = ["finish", "read"];
+  const picks = [["/repo"], ["/saved"]];
+  const ctx = {
+    add: (_r, fn) => commands.push(fn()),
+    sessions: { current: () => undefined },
+    client: {
+      rpc: () => ({
+        createSaved: async (input) => {
+          saved.push(input);
+          return { manifest: "/saved/new.workspace" };
+        },
+        open: async () => ({ sessionID: "ses_new" }),
+      }),
+    },
+    desktop: { pick: async () => picks.shift() },
+    tabs: { open: (args) => opened.push(args) },
+    dialogs: {
+      prompt: async () => "New portal",
+      select: async () => choices.shift(),
+      confirm: async () => true,
+      alert: async () => {},
+    },
+  };
+  gui.setup(ctx);
+  await commands.find((c) => c.id === "create").run();
+  assert.equal(saved[0].name, "New portal");
+  assert.equal(saved[0].allowFileWrites, false);
+  assert.equal(opened[0].id, "ses_new");
+});

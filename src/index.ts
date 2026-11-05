@@ -1,4 +1,5 @@
-import { relative, isAbsolute, sep, parse } from "node:path";
+import { workspaceCatalog } from "./catalog.mjs";
+import { relative, isAbsolute, sep, parse, dirname } from "node:path";
 import { Plugin } from "@opencode/plugin";
 import { z } from "zod";
 import {
@@ -82,6 +83,7 @@ export default Plugin.define({
           resources: [path + "/*"],
         });
     };
+    const catalog = workspaceCatalog(ctx.storage);
     const key = (sessionID: string) => `session:${sessionID}:manifest`;
     const workspace = async (sessionID: string, signal?: AbortSignal) => {
       const selected = await ctx.storage.get(key(sessionID));
@@ -95,15 +97,37 @@ export default Plugin.define({
     };
     registrations.push(
       await ctx.rpc.register(WorkspaceRpc, {
+        list: async () => catalog.list(),
+        forget: async ({ manifest }) => {
+          await catalog.forget(manifest);
+          return "Listeden kaldırıldı. Workspace dosyası ve sohbetler korunuyor.";
+        },
+        open: async ({ manifest }, call) => {
+          const ws = await loadWorkspace(manifest, call.signal);
+          const session = await ctx.session.create({
+            title: ws.name,
+            location: { directory: dirname(ws.manifest) },
+          });
+          await ctx.storage.set(key(session.id), ws.manifest);
+          await catalog.remember(ws.manifest, call.signal);
+          return { sessionID: session.id, manifest: ws.manifest };
+        },
+        createSaved: async (input, call) => {
+          const ws = await createWorkspace(input, call.signal);
+          await catalog.remember(ws.manifest, call.signal);
+          return { manifest: ws.manifest };
+        },
         create: async (input, call) => {
           const ws = await createWorkspace(input, call.signal);
           await ctx.storage.set(key(input.sessionID), ws.manifest);
+          await catalog.remember(ws.manifest, call.signal);
           return `“${ws.name}” oluşturuldu ve bu sohbet için açıldı.\n\nDosya: ${ws.manifest}\n\nKlasörler:\n${ws.roots.map((r) => `${r.name}: ${r.path}`).join("\n")}`;
         },
         select: async ({ sessionID, manifest }, call) => {
           // Validate before replacing the previous selection. No writes to user repos.
           const ws = await loadWorkspace(manifest, call.signal);
           await ctx.storage.set(key(sessionID), ws.manifest);
+          await catalog.remember(ws.manifest, call.signal);
           return workspaceContext(ws);
         },
         status: async ({ sessionID }, call) => {
