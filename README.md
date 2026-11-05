@@ -28,7 +28,27 @@ implemented; a custom explorer panel is not. See the [capability matrix](docs/co
 - Existing local session on Desktop's built-in server. Remote servers and draft tabs are rejected by the picker.
 - Trusted repositories and manifest. Only Linux/Pardus was exercised; Windows/macOS are unverified.
 
-## Install from source
+## Install with the platform scripts
+
+Extract the complete source ZIP, then run `sh install.sh` on Linux/Pardus or `install.bat` on
+Windows. Node 22.18+ LTS, npm, Git and internet access are required; no administrator/sudo is needed.
+Close Desktop before updating. The installer builds/tests a staged copy, installs it into the
+global automatically discovered `plugins/opencode-multi-root-workspace` directory, and backs up
+an existing installation as `.multi-root-backup-*` beside the plugins directory. It preserves
+existing JSON/JSONC settings and does not modify your source checkout. A prebuilt tarball installs
+runtime dependencies and uses its included GUI bundle instead of rebuilding.
+
+The config directory is `OPENCODE_CONFIG_DIR`, else `XDG_CONFIG_HOME/opencode`, else
+`~/.config/opencode` (also on Windows: `%USERPROFILE%\.config\opencode`). Override with
+`sh install.sh --config-dir "/custom/opencode"` or `install.bat --config-dir "D:\OpenCode Config"`;
+Desktop must use that same config directory. Restart Desktop after installation.
+Do not also add this plugin to the `plugins` array; remove a previous manual entry if switching
+installation methods. To uninstall, close Desktop and remove only the installed plugin directory.
+The BAT wrapper has not been executed on a Windows host; Linux installation is integration-tested.
+
+## Install from source manually (alternative)
+
+Use either this method or the scripts, not both.
 
 Download/extract this repository, enter its directory, then:
 

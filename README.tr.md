@@ -5,6 +5,29 @@ Frontend ve backend ayrı Git repoları olarak kalır; bir AI sohbetinde repo ad
 
 ## Kurulum
 
+**Linux / Pardus:** ZIP'i açın ve proje klasöründe `sh install.sh` çalıştırın.
+**Windows:** ZIP'i açın ve proje klasöründe `install.bat` çalıştırın (çift tıklayabilir veya terminalden başlatabilirsiniz).
+Node.js 22.18+ LTS, npm ve Git kurulu olmalıdır; yönetici/sudo gerekmez.
+Kurulum sırasında internet bağlantısı gerekir. OpenCode Desktop hedef sürümü 2.2.5'tir.
+
+Kurucu bağımlılıkları yükler, kaynak dağıtımını test edip derler ve eklentinin bağımsız bir kopyasını
+`~/.config/opencode/plugins/opencode-multi-root-workspace` altına yerleştirir. Windows'ta varsayılan
+konum `%USERPROFILE%\.config\opencode\plugins\opencode-multi-root-workspace` olur.
+`OPENCODE_CONFIG_DIR` ve `XDG_CONFIG_HOME` ayarları varsa önceliklidir.
+Özel konum: `sh install.sh --config-dir "/özel/opencode"` veya `install.bat --config-dir "D:\OpenCode Config"`.
+Özel konum kullanırsanız Desktop da aynı yapılandırma dizinini kullanmalıdır.
+
+Mevcut ayarlar değiştirilmez; OpenCode global eklenti klasörünü otomatik keşfeder.
+Güncellemeden önce Desktop'ı kapatın. Önceki kurulum, yapılandırma dizininde `.multi-root-backup-*`
+klasörüne yedeklenir. Hata durumunda geçerli kurulum korunur. Kurulum bittikten sonra Desktop'ı
+başlatın. Aynı eklentiyi ayrıca `plugins` listesine eklemeyin; daha önce elle eklediyseniz o kaydı kaldırın.
+Kaldırmak için Desktop kapalıyken yalnız kurulan `plugins/opencode-multi-root-workspace` klasörünü silin.
+Windows BAT dosyası hazırlandı; Windows ortamında çalıştırma doğrulaması yapılmadı.
+
+### Elle kurulum (alternatif)
+
+Aşağıdaki yöntem script kurulumuna alternatiftir; ikisini birlikte uygulamayın.
+
 Kaynak klasöründe Node 22.18+ ve npm ile:
 
 ```sh

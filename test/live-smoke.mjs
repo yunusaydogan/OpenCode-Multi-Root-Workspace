@@ -15,12 +15,16 @@ const pluginDir = resolve(
     dirname(dirname(fileURLToPath(import.meta.url))),
 );
 const base = await mkdtemp(join(tmpdir(), "oc-live-"));
-const config = join(base, "config");
-await mkdir(config);
-await writeFile(
-  join(config, "opencode.json"),
-  JSON.stringify({ plugins: [pluginDir] }),
-);
+const config = process.env.WORKSPACE_SMOKE_CONFIG_DIR
+  ? resolve(process.env.WORKSPACE_SMOKE_CONFIG_DIR)
+  : join(base, "config");
+if (!process.env.WORKSPACE_SMOKE_CONFIG_DIR) {
+  await mkdir(config);
+  await writeFile(
+    join(config, "opencode.json"),
+    JSON.stringify({ plugins: [pluginDir] }),
+  );
+}
 const env = {
   ...process.env,
   OPENCODE_CONFIG_DIR: config,

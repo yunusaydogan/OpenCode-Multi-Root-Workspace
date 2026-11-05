@@ -43,7 +43,7 @@ replace the tested API. Re-run `npm audit` before a release; the registry can ch
 7. In a disposable repo with a local bare remote, review staged diff; approve stage/commit/push
    separately. Verify the other repo and unrelated upstream branches stay unchanged.
 
-Final automated result: **15/15 tests passed**, TypeScript check passed, GUI build passed,
+Final automated result: **17/17 tests passed**, TypeScript check passed, GUI build passed,
 source and packed-artifact live-server smoke tests passed. Reproduce the live check with:
 
 ```sh
@@ -54,3 +54,16 @@ WORKSPACE_PLUGIN_DIR=/path/to/extracted/package OPENCODE_BIN=/path/to/opencode n
 
 A separate review identified `push.followTags` / submodule-push leakage. The fix disables
 both for workspace pushes; a real-Git regression verifies an annotated local tag stays local.
+
+## Platform installers
+
+Added `install.sh`, `install.bat` and shared `scripts/install.mjs`. The Linux script was run
+end-to-end against a temporary config path containing spaces. Source dependencies, the full
+check/build and staged installation passed. Installer tests verify config path precedence,
+preservation of existing JSONC text and backup of an existing installation. Windows command
+execution has not been exercised on a Windows host. The scripts require Node/npm/Git already
+installed and do not install system dependencies or alter the real user's OpenCode config.
+
+The installed Linux copy was also loaded by a real isolated OpenCode 2.2.5 server through
+automatic global plugin discovery, without adding a `plugins` configuration entry. Manifest
+selection, status, GUI bundle delivery and clearing selection passed.

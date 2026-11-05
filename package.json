@@ -22,7 +22,10 @@
     "docs",
     "README.md",
     "README.tr.md",
-    "LICENSE"
+    "LICENSE",
+    "scripts",
+    "install.sh",
+    "install.bat"
   ],
   "scripts": {
     "test": "node --test test/*.test.mjs",
