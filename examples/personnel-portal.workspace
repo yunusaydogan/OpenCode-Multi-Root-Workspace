@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "name": "Personnel Portal",
+  "roots": [
+    { "name": "frontend", "path": "./personnel-frontend" },
+    { "name": "backend", "path": "./personnel-backend" }
+  ],
+  "allowFileWrites": false,
+  "allowGitWrites": false
+}
