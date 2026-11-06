@@ -83,3 +83,7 @@ acceptance check; the wizard adapter is exercised through the host harness.
 ## Save-flow regression
 
 A scoped create RPC routed through a chat whose project directory no longer exists returns 404. The wizard now uses the Desktop global client for createSaved/open and always opens a new local session. Regression coverage verifies a stale active chat is never used, automatic saving needs no second directory picker, and the live server writes and reads a manifest under its isolated config/workspaces directory before opening it. Native option lists now have visible instructional placeholders rather than relying on screen-reader-only titles.
+
+## English interface
+
+The workspace hub, creation wizard, dialogs, server success messages, and Linux/Windows installer wrappers now use English. GUI command IDs, RPC contracts, manifest fields and stored catalog data remain unchanged. Unicode workspace names are still covered by the tests. The primary README includes a copyable installation prompt for an OpenCode agent.

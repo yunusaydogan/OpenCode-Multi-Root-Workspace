@@ -54,29 +54,29 @@ Desktop'ı yeniden başlatın. Settings > Extensions > Plugins bölümünde ekle
 Bir klasör açın ve ilk mesajınızı göndererek sohbet oluşturun. Komut paletinden
 **Multi-Root Workspace: Open .workspace** çalıştırın ve manifest dosyanızı seçin.
 **Status** her reponun durumunu, **Clear selection** mevcut sohbetin seçimini yönetir.
-Eski dosya açma komutu mevcut sohbet içindir; aşağıdaki Workspace'ler alanı Home ekranında da çalışır.
+Eski dosya açma komutu mevcut sohbet içindir; aşağıdaki Workspaces alanı Home ekranında da çalışır.
 
 ## Kod yazmadan yeni workspace
 
-Home dahil tüm ekranlarda **Workspace’ler** klasör simgesi bulunur. Sol sekme düzeninde sol panelin altında küçük bir simge, üst sekme düzeninde üst çubukta görünür. Geniş alt şerit kaldırılmıştır. Burada kayıtlı workspace’leri görebilir, birine tıklayıp yeni sohbette açabilir, mevcut `.workspace` dosyasını ekleyebilir veya **Yeni Workspace** seçebilirsiniz. Aynı listeye komut paletindeki **Workspace’ler** komutundan ve sohbetin **+** menüsünden de erişilir.
+Home dahil tüm ekranlarda **Workspaces** klasör simgesi bulunur. Sol sekme düzeninde sol panelin altında küçük bir simge, üst sekme düzeninde üst çubukta görünür. Geniş alt şerit kaldırılmıştır. Burada kayıtlı workspace’leri görebilir, birine tıklayıp yeni sohbette açabilir, mevcut `.workspace` dosyasını ekleyebilir veya **New Workspace** seçebilirsiniz. Aynı listeye komut paletindeki **Workspaces** komutundan ve sohbetin **+** menüsünden de erişilir.
 
-Liste kalıcıdır; oluşturduğunuz veya açtığınız workspace’ler eklenir. Önceki sürümde sohbetlere bağlı kayıtlar da listeye alınır. **Listeden kaldır** dosyaları veya sohbetleri silmez. Eksik dosya/repolar listede işaretlenir. En fazla 200 kayıt gösterilir.
+Liste kalıcıdır; oluşturduğunuz veya açtığınız workspace’ler eklenir. Önceki sürümde sohbetlere bağlı kayıtlar da listeye alınır. **Remove from list** dosyaları veya sohbetleri silmez. Eksik dosya/repolar listede işaretlenir. En fazla 200 kayıt gösterilir.
 
-Yeni workspace oluşturmak için açık bir sohbet gerekmez. Mevcut bir yerel sohbette yan panelin **+** menüsünde **Yeni Workspace** de kullanılabilir.
-Aynı akış komut paletinde **Multi-Root Workspace: Yeni Workspace** olarak da bulunur.
+Yeni workspace oluşturmak için açık bir sohbet gerekmez. Mevcut bir yerel sohbette yan panelin **+** menüsünde **New Workspace** de kullanılabilir.
+Aynı akış komut paletinde **Multi-Root Workspace: New Workspace** olarak da bulunur.
 
 1. Workspace adını yazın.
-2. Klasör seçicisinden frontend/backend Git repolarınızı seçin. Farklı konumlar için **Başka klasör ekle** kullanın.
-3. **Devam et** ile yalnız okuma, dosya düzenleme veya dosya düzenleme + Git erişimini seçin.
-4. **Varsayılan konuma kaydet** seçin. İsterseniz **Farklı bir kayıt klasörü seç** ile konumu değiştirebilirsiniz.
-5. Özeti kontrol edip **Oluştur ve aç** düğmesine basın.
+2. Klasör seçicisinden frontend/backend Git repolarınızı seçin. Farklı konumlar için **Add another folder** kullanın.
+3. **Continue** ile yalnız okuma, dosya düzenleme veya dosya düzenleme + Git erişimini seçin.
+4. **Save to default location** seçin. İsterseniz **Choose a different save folder** ile konumu değiştirebilirsiniz.
+5. Özeti kontrol edip **Create and open** düğmesine basın.
 
 `.workspace` dosyası otomatik oluşturulur ve her zaman yeni bir yerel sohbette açılır. Açık sohbetin klasörü taşınmış/silinmiş olsa da oluşturma ona bağlı değildir. JSON düzenlemeniz gerekmez.
 Varsayılan kayıt konumu OpenCode yapılandırma klasörünün `workspaces` alt klasörüdür (normalde `~/.config/opencode/workspaces`). Başarı mesajında dosyanın tam yolu gösterilir.
 Repo adları klasör adlarından otomatik üretilir. Mevcut workspace dosyasının üzerine yazılmaz;
 aynı konumda aynı ad varsa farklı bir workspace adı veya kayıt klasörü seçin.
 Seçilen klasörler önceden var olan Git repo/worktree kökleri olmalıdır. Bu işlem yeni Git reposu oluşturmaz.
-Yerleşik başlangıç proje seçicisi aynı kalır; **Yeni Workspace**, eklentinin yan panel menüsündedir.
+Yerleşik başlangıç proje seçicisi aynı kalır; **New Workspace**, eklentinin yan panel menüsündedir.
 
 ## Manifest (elle düzenlemek isteyenler için)
 
@@ -128,3 +128,5 @@ Ayrıntılar: [İngilizce README](README.md), [API sınırları](docs/compatibil
 [test kanıtları](docs/validation.md), [yayın akışı](docs/publishing.md).
 
 Konum sınırı: OpenCode 2.2.5 eklenti API’si sol menüde Home altına bir bölüm ekletmiyor. Bu sürüm desteklenen `TitlebarItem` alanını kullanır; yerleşik Projects listesi değiştirilmez.
+
+Arayüz ve kurulum mesajları artık İngilizcedir. Otomatik kurulum için OpenCode’a verilecek hazır İngilizce prompt, [ana README’nin kurulum bölümündedir](README.md#let-opencode-install-the-plugin).

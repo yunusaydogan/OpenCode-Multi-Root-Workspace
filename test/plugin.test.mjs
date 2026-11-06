@@ -312,7 +312,7 @@ test("workspace hub works on Home and opens a saved workspace in a local tab", a
   const shortcut = commands.find(
     (c) => c.id === "workspaces" && c.icon === "folder" && c.label,
   );
-  assert.equal(shortcut.label, "Workspace’ler");
+  assert.equal(shortcut.label, "Workspaces");
 });
 test("new workspace on Home saves a manifest and opens a session without an existing chat", async () => {
   const commands = [],

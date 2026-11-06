@@ -80,14 +80,12 @@ export default Plugin.define({
     const create = () =>
       report(async () => {
         if (!ctx.desktop)
-          throw new Error(
-            "Workspace oluşturmak için OpenCode Desktop kullanın.",
-          );
+          throw new Error("Use OpenCode Desktop to create a workspace.");
         const name = await ctx.dialogs.prompt({
-          title: "Yeni Workspace",
-          description: "Workspace için bir ad girin. Örnek: Personel Portalı",
-          placeholder: "Workspace adı",
-          submit: "Devam et",
+          title: "New Workspace",
+          description: "Enter a workspace name, for example: Personnel Portal",
+          placeholder: "Workspace name",
+          submit: "Continue",
         });
         if (!name) return;
         const folders: string[] = [];
@@ -95,76 +93,76 @@ export default Plugin.define({
           const selected = await ctx.desktop.pick({
             directory: true,
             multiple: true,
-            title: "Workspace klasörlerini seçin",
+            title: "Select workspace repository folders",
           });
           for (const folder of selected)
             if (!folders.includes(folder)) folders.push(folder);
           if (!folders.length) return;
           const action = await ctx.dialogs.select({
-            title: `${folders.length} klasör seçildi`,
-            placeholder: "Klasör ekleyin veya Devam et seçin",
+            title: `${folders.length} folder(s) selected`,
+            placeholder: "Add another folder or choose Continue",
             current: "finish",
             options: [
               {
-                title: "Başka klasör ekle",
+                title: "Add another folder",
                 value: "add",
                 description:
-                  "Farklı konumlardaki repoları da ekleyebilirsiniz.",
+                  "You can add repositories from different locations.",
               },
               {
-                title: "Devam et",
+                title: "Continue",
                 value: "finish",
                 description: folders.join(" · "),
               },
-              { title: "İptal", value: "cancel" },
+              { title: "Cancel", value: "cancel" },
             ],
           });
           if (action === "finish") break;
           if (action !== "add") return;
         }
         const access = await ctx.dialogs.select({
-          title: "Workspace erişimi",
-          placeholder: "Bu workspace için erişim türünü seçin",
+          title: "Workspace access",
+          placeholder: "Choose an access level for this workspace",
           current: "read",
           options: [
             {
-              title: "Yalnızca okuma",
+              title: "Read-only",
               value: "read",
-              description: "Dosyaları incele, Git status/diff göster.",
+              description: "Inspect files and view Git status/diff.",
             },
             {
-              title: "Dosya düzenleme",
+              title: "File editing",
               value: "files",
               description:
-                "Dosyaları onayla düzenle. Git değişiklikleri kapalı.",
+                "Edit files with approval. Git mutations remain disabled.",
             },
             {
-              title: "Dosya düzenleme ve Git işlemleri",
+              title: "File editing and Git operations",
               value: "all",
               description:
-                "Dosya yazma, stage, commit ve push ayrı izinlerle kullanılabilir.",
+                "Write files, stage, commit, and push with separate permission checks.",
             },
           ],
         });
         if (!access) return;
         const defaults = await ctx.client.rpc(WorkspaceRpc).defaults({});
         const saveMode = await ctx.dialogs.select({
-          title: "Workspace dosyasını kaydet",
-          placeholder: "Workspace dosyası nereye kaydedilsin?",
+          title: "Save workspace file",
+          placeholder: "Where should the workspace file be saved?",
           current: "default",
           options: [
             {
-              title: "Varsayılan konuma kaydet",
+              title: "Save to default location",
               value: "default",
               description: defaults.directory,
             },
             {
-              title: "Farklı bir kayıt klasörü seç",
+              title: "Choose a different save folder",
               value: "custom",
               description:
-                "Repo ekleme adımı değil; .workspace dosyasının konumu.",
+                "Choose where to store the .workspace file, not another repository.",
             },
-            { title: "İptal", value: "cancel" },
+            { title: "Cancel", value: "cancel" },
           ],
         });
         if (!saveMode || saveMode === "cancel") return;
@@ -172,47 +170,45 @@ export default Plugin.define({
         if (saveMode === "custom") {
           [directory] = await ctx.desktop.pick({
             directory: true,
-            title: "Workspace dosyasının kayıt konumu (repo eklenmez)",
+            title: "Choose a save folder for the workspace file",
           });
           if (!directory) return;
         }
         if (
           !(await ctx.dialogs.confirm({
-            title: "Workspace oluştur",
-            description: `${name}\n\nKlasörler:\n${folders.join("\n")}\n\nWorkspace dosyasının kayıt konumu: ${directory ?? defaults.directory}\n\nSeçilen klasörlerin Git repo kökü olması gerekir. Mevcut dosyaların üzerine yazılmaz.`,
-            confirm: "Oluştur ve aç",
-            cancel: "İptal",
+            title: "Create workspace",
+            description: `${name}\n\nRepository folders:\n${folders.join("\n")}\n\nWorkspace file location: ${directory ?? defaults.directory}\n\nSelected folders must be Git repository roots. Existing files will not be overwritten.`,
+            confirm: "Create and open",
+            cancel: "Cancel",
           }))
         )
           return;
-        const saved = await ctx.client
-          .rpc(WorkspaceRpc)
-          .createSaved({
-            name,
-            ...(directory ? { directory } : {}),
-            folders,
-            allowFileWrites: access !== "read",
-            allowGitWrites: access === "all",
-          });
+        const saved = await ctx.client.rpc(WorkspaceRpc).createSaved({
+          name,
+          ...(directory ? { directory } : {}),
+          folders,
+          allowFileWrites: access !== "read",
+          allowGitWrites: access === "all",
+        });
         try {
           await openSaved(saved.manifest);
         } catch (error) {
           throw new Error(
-            `Workspace dosyası kaydedildi: ${saved.manifest}\nAncak sohbet açılamadı. Workspace’ler listesinden yeniden açabilirsiniz.\n${error instanceof Error ? error.message : String(error)}`,
+            `Workspace file saved: ${saved.manifest}\nThe conversation could not be opened. Reopen the saved file from Workspaces.\n${error instanceof Error ? error.message : String(error)}`,
           );
         }
-        return `“${name}” kaydedildi ve açıldı.\n\nWorkspace dosyası: ${saved.manifest}`;
+        return `“${name}” was saved and opened.\n\nWorkspace file: ${saved.manifest}`;
       });
     ctx.add(Command, () => ({
       id: "create",
-      title: "Multi-Root Workspace: Yeni Workspace",
-      keywords: "new create oluştur klasör frontend backend",
+      title: "Multi-Root Workspace: New Workspace",
+      keywords: "new create folders repositories frontend backend",
       run: create,
     }));
     ctx.add(MenuItem, () => ({
       id: "new-workspace",
       menu: "session.panel" as const,
-      title: "Yeni Workspace",
+      title: "New Workspace",
       icon: "folder" as const,
       run: () => {
         void create();
@@ -230,32 +226,34 @@ export default Plugin.define({
         while (true) {
           const items = await ctx.client.rpc(WorkspaceRpc).list({});
           const choice = await ctx.dialogs.select({
-            title: "Workspace'ler",
+            title: "Workspaces",
             options: [
               {
-                title: "Yeni Workspace",
+                title: "New Workspace",
                 value: "new",
-                description: "Ad verin, Git klasörlerini seçin ve kaydedin.",
+                description:
+                  "Name your workspace, select Git folders, and save.",
               },
               {
-                title: "Mevcut workspace ekle",
+                title: "Add existing workspace",
                 value: "import",
                 description:
-                  ".workspace dosyası seçerek listeye ekleyin ve açın.",
+                  "Choose a .workspace file to add it to the list and open it.",
               },
               ...items.map((item) => ({
                 title:
                   item.name +
-                  (item.available ? "" : " — dosya veya repo bulunamadı"),
+                  (item.available ? "" : " — file or repository not found"),
                 value: "open:" + item.manifest,
                 description: `${item.roots} repo · ${item.manifest}`,
               })),
               ...(items.length
                 ? [
                     {
-                      title: "Listeden workspace kaldır",
+                      title: "Remove workspace from list",
                       value: "remove",
-                      description: "Dosyaları ve sohbetleri silmez.",
+                      description:
+                        "Keeps workspace files, repositories, and conversations.",
                     },
                   ]
                 : []),
@@ -270,14 +268,14 @@ export default Plugin.define({
             const [manifest] =
               (await ctx.desktop?.pick({
                 extensions: ["workspace"],
-                title: "Workspace seçin",
+                title: "Select a workspace file",
               })) ?? [];
             if (manifest) await openSaved(manifest);
             return;
           }
           if (choice === "remove") {
             const manifest = await ctx.dialogs.select({
-              title: "Listeden kaldırılacak workspace",
+              title: "Choose a workspace to remove from the list",
               options: items.map((item) => ({
                 title: item.name,
                 value: item.manifest,
@@ -287,10 +285,10 @@ export default Plugin.define({
             if (
               manifest &&
               (await ctx.dialogs.confirm({
-                title: "Listeden kaldır?",
+                title: "Remove from list?",
                 description:
-                  "Workspace dosyası, repolar ve mevcut sohbetler korunacak.",
-                confirm: "Listeden kaldır",
+                  "The workspace file, repositories, and existing conversations will be kept.",
+                confirm: "Remove from list",
               }))
             )
               await ctx.client.rpc(WorkspaceRpc).forget({ manifest });
@@ -304,14 +302,14 @@ export default Plugin.define({
       });
     ctx.add(Command, () => ({
       id: "workspaces",
-      title: "Workspace'ler",
-      keywords: "home list workspace kayıtlı projeler",
+      title: "Workspaces",
+      keywords: "home list saved workspaces projects",
       run: hub,
     }));
     ctx.add(MenuItem, () => ({
       id: "workspaces",
       menu: "session.panel" as const,
-      title: "Workspace'ler",
+      title: "Workspaces",
       icon: "folder" as const,
       run: () => {
         void hub();
@@ -319,8 +317,8 @@ export default Plugin.define({
     }));
     ctx.add(TitlebarItem, () => ({
       id: "workspaces",
-      label: "Workspace’ler",
-      title: "Workspace’ler — oluştur, aç ve yönet",
+      label: "Workspaces",
+      title: "Workspaces — create, open, and manage",
       icon: "folder" as const,
       run: () => {
         void hub();

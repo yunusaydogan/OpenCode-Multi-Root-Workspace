@@ -103,7 +103,7 @@ export default Plugin.define({
         list: async () => catalog.list(),
         forget: async ({ manifest }) => {
           await catalog.forget(manifest);
-          return "Listeden kaldırıldı. Workspace dosyası ve sohbetler korunuyor.";
+          return "Removed from the list. The workspace file and conversations are preserved.";
         },
         open: async ({ manifest }, call) => {
           const ws = await loadWorkspace(manifest, call.signal);
@@ -129,7 +129,7 @@ export default Plugin.define({
           const ws = await createWorkspace(input, call.signal);
           await ctx.storage.set(key(input.sessionID), ws.manifest);
           await catalog.remember(ws.manifest, call.signal);
-          return `“${ws.name}” oluşturuldu ve bu sohbet için açıldı.\n\nDosya: ${ws.manifest}\n\nKlasörler:\n${ws.roots.map((r) => `${r.name}: ${r.path}`).join("\n")}`;
+          return `“${ws.name}” was created and opened for this conversation.\n\nFile: ${ws.manifest}\n\nRepository folders:\n${ws.roots.map((r) => `${r.name}: ${r.path}`).join("\n")}`;
         },
         select: async ({ sessionID, manifest }, call) => {
           // Validate before replacing the previous selection. No writes to user repos.

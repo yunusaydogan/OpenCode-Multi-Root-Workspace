@@ -78,6 +78,45 @@ Alternatively, download the repository with **Code → Download ZIP**, extract t
 and run the installer inside it. On Windows, you can double-click `install.bat`.
 Keep the `scripts` folder beside the installer; the wrapper is not a standalone download.
 
+### Let OpenCode install the plugin
+
+Copy the prompt below into an OpenCode conversation with terminal access. It asks the agent to
+perform the same source installation, preserve your settings, and verify the result. Normal
+OpenCode permissions still apply. This prompt does not install model credentials or publish code.
+
+```text
+Install OpenCode Multi-Root Workspace from this repository on my computer:
+https://github.com/yunusaydogan/OpenCode-Multi-Root-Workspace
+
+1. Detect my OS and locate my OpenCode configuration directory. Respect
+   OPENCODE_CONFIG_DIR and XDG_CONFIG_HOME; otherwise use ~/.config/opencode
+   (normally %USERPROFILE%\.config\opencode on Windows).
+2. Check that OpenCode Desktop 2.2.5, Git, Node.js 22.18+ and npm are available.
+   If a prerequisite is missing or my OpenCode version is incompatible,
+   explain what I need before proceeding. Do not install system packages
+   with administrator/sudo permissions without asking.
+3. Clone the repository into a dedicated user-writable directory. If reusing
+   a checkout, verify its remote and preserve any local changes. Read its
+   README and inspect the installation scripts before executing them.
+4. Run sh install.sh on Linux or install.bat on Windows from that checkout.
+   Preserve existing OpenCode settings and existing installation backups.
+   Use the automatically discovered plugin directory; do not add a duplicate
+   entry to the plugins configuration array.
+5. Verify the command succeeded, the installed package exists, and its
+   dist/gui-experimental.cjs bundle is present. If a supported OpenCode
+   plugin-status check is available, verify multi-root-workspace is active.
+   Clearly distinguish file/build checks from visual Desktop verification.
+6. Report the installation path, any errors or compatibility limits, and how
+   to open the Workspaces folder icon, choose New Workspace, select my Git
+   repository folders, and use Save to default location -> Create and open.
+
+Do not delete conversations, reset my data, change network/service/authentication
+settings, weaken permissions, or access repository secrets. Do not close my
+current OpenCode conversation. If Desktop must be restarted, tell me after
+installation rather than terminating the current session. Do not claim the
+plugin is installed unless the installation checks actually pass.
+```
+
 ### What the installer does
 
 1. Checks Node.js, npm, and Git.
@@ -160,13 +199,13 @@ There is **no npm release advertised by this repository**. Source installation i
 
 ### Create your first workspace
 
-1. Open Desktop and find the small **folder icon**. Hover to see **Workspace’ler** (Workspaces).
-2. Choose **Yeni Workspace** (New workspace) and enter a name.
-3. Select your frontend/backend repository folders. Use **Başka klasör ekle** (Add another folder)
-   to select repositories from different locations, then choose **Devam et** (Continue).
+1. Open Desktop and find the small **folder icon**. Hover to see **Workspaces** (Workspaces).
+2. Choose **New Workspace** and enter a name.
+3. Select your frontend/backend repository folders. Use **Add another folder**
+   to select repositories from different locations, then choose **Continue**.
 4. Choose the access level: read-only, file editing, or file editing plus Git mutations.
-5. Choose **Varsayılan konuma kaydet** (Save to default location), or choose a custom save folder.
-6. Review the summary and click **Oluştur ve aç** (Create and open).
+5. Choose **Save to default location**, or choose a custom save folder.
+6. Review the summary and click **Create and open**.
 
 The plugin writes the manifest and opens a **new local conversation** with the workspace attached.
 It does not depend on the current conversation's project directory. The success message shows
@@ -180,8 +219,7 @@ Creating a workspace does not initialize repositories, clone them, or move their
 Select each repository's actual Git root. Root names are derived from folder names; use
 `workspace_info` to see the resulting names.
 
-**The current GUI labels are Turkish.** This README includes their English meanings;
-full GUI localization is not implemented yet.
+**The plugin interface and installer messages are in English.** A separate [Turkish guide](README.tr.md) is available; automatic UI language switching is not implemented.
 
 ### Reopen, import, or remove a workspace
 
@@ -190,15 +228,15 @@ Open the folder-icon hub to see up to **200 saved entries**:
 | Action | Result |
 | --- | --- |
 | Select a saved workspace | Opens a new conversation with that workspace |
-| **Mevcut workspace ekle** — Add existing workspace | Selects an existing `.workspace` file, registers it, and opens it |
-| **Yeni Workspace** — New workspace | Starts the creation wizard |
-| **Listeden workspace kaldır** — Remove from list | Forgets the entry; preserves the manifest, repositories, and conversations |
+| **Add existing workspace** | Selects an existing `.workspace` file, registers it, and opens it |
+| **New Workspace** | Starts the creation wizard |
+| **Remove workspace from list** | Forgets the entry; preserves the manifest, repositories, and conversations |
 
 The list persists across conversations. Previous session selections are imported into the catalog
 when possible. Missing manifests or repositories are marked as unavailable. Manifests created
 outside the plugin need to be imported; the plugin does not scan your computer for workspace files.
 
-The command palette also provides **Workspace’ler**, **Multi-Root Workspace: Yeni Workspace**,
+The command palette also provides **Workspaces**, **Multi-Root Workspace: New Workspace**,
 **Open .workspace**, **Status**, and **Clear selection**. The last three operate on an existing local
 conversation. **Clear selection** clears its attachment, not the catalog entry. New/forked/subagent
 conversations do not automatically inherit a selection.
@@ -339,7 +377,7 @@ native single-location project model.
 | Automatically load every extra root's AGENTS.md or project plugins/config | No; read repo instructions explicitly |
 | Clone repositories or create branches/remotes | No |
 | Remote-server Desktop workflow | Not supported by this GUI release |
-| English GUI | Not yet; current labels are Turkish |
+| English GUI and installer messages | Yes |
 
 The compact shortcut uses the official `TitlebarItem` API rather than modifying the app's DOM.
 Native tools keep their normal project scope. Use Git and reviewed backups to recover custom
@@ -359,13 +397,13 @@ See [compatibility and upstream evidence](docs/compatibility.md) and
 
 **The workspace is not in the list**
 
-Import its `.workspace` file with **Mevcut workspace ekle**. A catalog entry is separate from the
+Import its `.workspace` file with **Add existing workspace**. A catalog entry is separate from the
 file itself. Removing an entry does not delete the manifest. A missing-file label means the
 manifest or one of its repositories moved or is unavailable.
 
 **Creation fails or no file appears**
 
-Finish with **Oluştur ve aç**; picking repository folders alone does not create a file.
+Finish with **Create and open**; picking repository folders alone does not create a file.
 Use the default save option unless you need another location. Check that every selected folder
 is a Git root, the destination is writable, and a manifest with that name does not already exist.
 The success message shows the exact path. If saving succeeds but opening fails, the message
